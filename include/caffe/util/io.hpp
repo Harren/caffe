@@ -126,6 +126,15 @@ inline bool ReadImageToDatum(const string& filename, const int label,
   return ReadImageToDatum(filename, label, 0, 0, true, encoding, datum);
 }
 
+//自己修改的
+//////////////////////////////////////////
+bool ReadImageToDatum(const string& filename, std::vector<int> labels,
+	const int height, const int width, const bool is_color,
+	const std::string & encoding, Datum* datum);
+bool ReadFileLabelsToDatum(const string& filename, std::vector<int> labels,
+	Datum* datum);
+///////////////////////////////////
+
 bool DecodeDatumNative(Datum* datum);
 bool DecodeDatum(Datum* datum, bool is_color);
 

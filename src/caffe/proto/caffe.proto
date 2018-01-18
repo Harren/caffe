@@ -38,6 +38,9 @@ message Datum {
   repeated float float_data = 6;
   // If true data contains an encoded image that need to be decoded
   optional bool encoded = 7 [default = false];
+
+  // 新增可重复类型，以支持多标签
+  repeated float labels = 8;
 }
 
 message FillerParameter {

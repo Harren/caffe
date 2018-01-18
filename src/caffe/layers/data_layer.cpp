@@ -47,13 +47,32 @@ void DataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
       << top[0]->channels() << "," << top[0]->height() << ","
       << top[0]->width();
   // label
-  if (this->output_labels_) {
-    vector<int> label_shape(1, batch_size);
-    top[1]->Reshape(label_shape);
-    for (int i = 0; i < this->prefetch_.size(); ++i) {
-      this->prefetch_[i]->label_.Reshape(label_shape);
-    }
+  // if (this->output_labels_) {
+  //   vector<int> label_shape(1, batch_size);
+  //   top[1]->Reshape(label_shape);
+  //   for (int i = 0; i < this->prefetch_.size(); ++i) {
+  //     this->prefetch_[i]->label_.Reshape(label_shape);
+  //   }
+  // }
+  ////////////自己修改
+  if (this->output_labels_){
+     // int label_dim = 5;
+     // top[1]->Reshape(batch_size, label_dim, 1, 1);
+     // for (int i = 0; i < this->prefetch_.size(); ++i) {
+     //     this->prefetch_[i]->label_.Reshape(batch_size, label_dim, 1, 1);
+     // }
+
+     vector<int> label_shape(2, batch_size);
+     label_shape[1] = datum.labels_size();
+     top[1]->Reshape(label_shape);
+     for (int i = 0; i < this->prefetch_.size(); ++i) {
+         this->prefetch_[i]->label_.Reshape(label_shape);
+     }
   }
+  ////////////////////
+
+
+
 }
 
 template <typename Dtype>
@@ -116,9 +135,14 @@ void DataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
     this->transformed_data_.set_cpu_data(top_data + offset);
     this->data_transformer_->Transform(datum, &(this->transformed_data_));
     // Copy label.
+    //int label_dim = this->layer_param_.data_param().label_dim();
+    int label_dim = datum.labels_size();
     if (this->output_labels_) {
       Dtype* top_label = batch->label_.mutable_cpu_data();
-      top_label[item_id] = datum.label();
+      for(int label_i = 0; label_i < label_dim; label_i++) {
+          top_label[item_id * label_dim + label_i] = datum.labels(label_i);
+      }
+      //top_label[item_id] = datum.label();
     }
     trans_time += timer.MicroSeconds();
     Next();

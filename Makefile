@@ -192,7 +192,7 @@ ifeq ($(USE_LMDB), 1)
 	LIBRARIES += lmdb
 endif
 ifeq ($(USE_OPENCV), 1)
-	LIBRARIES += opencv_core opencv_highgui opencv_imgproc
+	LIBRARIES += opencv_core opencv_highgui opencv_imgproc opencv_imgcodecs
 
 	ifeq ($(OPENCV_VERSION), 3)
 		LIBRARIES += opencv_imgcodecs
@@ -577,7 +577,7 @@ $(STATIC_NAME): $(OBJS) | $(LIB_BUILD_DIR)
 	@ echo AR -o $@
 	$(Q)ar rcs $@ $(OBJS)
 
-$(BUILD_DIR)/%.o: %.cpp $(PROTO_GEN_HEADER) | $(ALL_BUILD_DIRS)
+$(BUILD_DIR)/%.o: %.cpp | $(ALL_BUILD_DIRS)
 	@ echo CXX $<
 	$(Q)$(CXX) $< $(CXXFLAGS) -c -o $@ 2> $@.$(WARNS_EXT) \
 		|| (cat $@.$(WARNS_EXT); exit 1)
@@ -694,6 +694,6 @@ $(DISTRIBUTE_DIR): all py | $(DISTRIBUTE_SUBDIRS)
 	install -m 644 $(DYNAMIC_NAME) $(DISTRIBUTE_DIR)/lib
 	cd $(DISTRIBUTE_DIR)/lib; rm -f $(DYNAMIC_NAME_SHORT);   ln -s $(DYNAMIC_VERSIONED_NAME_SHORT) $(DYNAMIC_NAME_SHORT)
 	# add python - it's not the standard way, indeed...
-	cp -r python $(DISTRIBUTE_DIR)/
+	cp -r python $(DISTRIBUTE_DIR)/python
 
 -include $(DEPS)
